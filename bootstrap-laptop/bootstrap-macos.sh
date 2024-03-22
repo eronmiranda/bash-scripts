@@ -16,18 +16,39 @@ die() {
   exit 1
 }
 
+# if needed, add command(s) to install: cli tools only, GUI applications only, and fonts only
 usage() {
-  log "Usage: ./bootstrap_macos.sh"
-  # defaults to install everything
-  # if needed, add commands to install: cli tools only, GUI applications only, and fonts only
+  cat <<EOF
+Usage: $ME [OPTION]
+
+Setups personal dev environment on a MacOS laptop.
+Installs CLI tools, GUI applications, and fonts.
+
+Available options:
+  -h, --help
+      Print this help message
+
+  -x, --debug
+      Enable debugging
+
+EOF
+
   exit "$1"
 }
 
 OS="$(uname)"
-[[ "$OS" != "Darwin" ]] && die  "Unsupported operating system ${OS}"
+[[ "$OS" != "Darwin" ]] && die "Unsupported operating system ${OS}"
 
 OPTION="${1:-}"
-[[ "$OPTION" == "-h" || "$OPTION" == "--help" ]] && usage 0
+
+case "$OPTION" in
+  -h|--help) usage 0;;
+  -x|--debug) set -x;;
+  *)
+    log "${OPTION}: no such option"
+    usage 1
+    ;;
+esac
 
 log "xcode-select: verifying installation status"
 if ! xcode-select -p &> /dev/null; then
@@ -102,5 +123,6 @@ else
   log "dock auto-hide delay time is already set to 0"
 fi
 
-# Creates a directory to store github repositories
+# creates a home directory for all github repositories
 [ -d "${HOME}/src/github" ] || mkdir -p "${HOME}/src/github"
+# add additional directories here if needed
