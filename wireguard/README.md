@@ -7,8 +7,8 @@ chmod +x /path/to/add-wg-client.sh
 sudo -i
 mkdir "/etc/wireguard" # Run this, if directory don't exist
 
-/path/to/add-wg-client.sh "10.0.0.2" "insert_server_public_ip:47111" 2 "macbook-laptop"
-/path/to/add-wg-client.sh "10.0.0.3" "insert_server_public_ip:47111" 3 "iphone15"
+/path/to/add-wg-client.sh "10.0.0.2" "insert_server_public_ip:47111" "macbook-laptop"
+/path/to/add-wg-client.sh "10.0.0.3" "insert_server_public_ip:47111" "iphone15"
 
 exit
 ```
