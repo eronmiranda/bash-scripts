@@ -1,0 +1,270 @@
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      default:
+        ipv4_address: 172.18.0.16
+    depends_on:
+      - overseerr
+      - plex
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/sonarr:/config
+      - /mnt/my_book/data:/data
+    ports:
+      - 8989:8989
+    networks:
+      default:
+        ipv4_address: 172.18.0.2
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/prowlarr:/config
+    ports:
+      - 9696:9696
+    networks:
+      default:
+        ipv4_address: 172.18.0.3
+    restart: unless-stopped
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+      - VIRTUAL_HOST=request.mortflix.stream
+    volumes:
+      - /home/eron/services/config/overseerr:/config
+    ports:
+      - 5055:5055
+    networks:
+      default:
+        ipv4_address: 172.18.0.4
+    restart: unless-stopped
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/sabnzbd:/config
+      - /home/eron/services/data/usenet/incomplete:/tmp/usenet
+      - /mnt/my_book/data/usenet:/data/usenet
+    ports:
+      - 8081:8080
+    networks:
+      default:
+        ipv4_address: 172.18.0.5
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/radarr:/config
+      - /mnt/my_book/data:/data
+    ports:
+      - 7878:7878
+    networks:
+      default:
+        ipv4_address: 172.18.0.6
+    restart: unless-stopped
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/readarr:/config
+      - /mnt/my_book/data:/data
+    ports:
+      - 8787:8787
+    networks:
+      default:
+        ipv4_address: 172.18.0.7
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/bazarr:/config
+      - /mnt/my_book/data/media:/data
+    ports:
+      - 6767:6767
+    networks:
+      default:
+        ipv4_address: 172.18.0.8
+    restart: unless-stopped
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+      - VERSION=docker
+      - PLEX_CLAIM=claim-5EtszyTp1tH4HqEwAS43
+      - VIRTUAL_HOST=mortflix.stream
+    volumes:
+      - /home/eron/services/config/plex:/config
+      - /mnt/my_book/data/media:/data
+      - /tmp/plex:/transcode
+    ports:
+      - 32400:32400
+    networks:
+      default:
+        ipv4_address: 172.18.0.9
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - /home/eron/services/config/qbittorrent:/config
+      - /home/eron/services/data/torrents:/data/torrents
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    networks:
+      default:
+        ipv4_address: 172.18.0.10
+    restart: unless-stopped
+
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - DOCKER_GID=999
+      - DATABASE_URL=file:/app/data/configs/db.sqlite
+    volumes:
+      - /home/eron/services/config/homarr/configs:/app/data/configs
+      - /home/eron/services/config/homarr/icons:/app/public/icons
+    ports:
+      - 7575:7575
+    networks:
+      default:
+        ipv4_address: 172.18.0.11
+    restart: unless-stopped
+
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    depends_on:
+      - plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/tautulli:/config
+    ports:
+      - 8181:8181
+    networks:
+      default:
+        ipv4_address: 172.18.0.12
+    restart: unless-stopped
+
+  notifiarr:
+    container_name: notifiarr
+    image: golift/notifiarr
+    hostname: notifiarr
+    ports:
+      - 5454:5454
+    volumes:
+      - /home/eron/services/config/notifiarr:/config
+      - /var/run/utmp:/var/run/utmp
+    environment:
+      - PUID=1000
+      - PGID=1000
+    networks:
+      default:
+        ipv4_address: 172.18.0.13
+    restart: unless-stopped
+
+  sonarr-anime:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-anime
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/sonarr-anime:/config
+      - /mnt/my_book/data:/data
+    ports:
+      - 8990:8989
+    networks:
+      default:
+        ipv4_address: 172.18.0.14
+    restart: unless-stopped
+
+  bazarr-anime:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr-anime
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Canada/Mountain
+    volumes:
+      - /home/eron/services/config/bazarr-anime:/config
+      - /mnt/my_book/data/media:/data
+    ports:
+      - 6868:6767
+    networks:
+      default:
+        ipv4_address: 172.18.0.15
+    restart: unless-stopped
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24

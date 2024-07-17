@@ -5,6 +5,9 @@ umask 077
 CLIENT_IP="$1"
 PUBLIC_IP="$2"
 CLIENT_NAME="$3"
+DNS="$4" # optional
+
+[[ -n "$DNS" ]] || DNS="1.1.1.1,1.0.0.1" # defaults to OpenDNS
 
 CONFIG_DIR="/etc/wireguard"
 SERVER_CONF="${CONFIG_DIR}/wg0.conf"
@@ -31,7 +34,7 @@ EOF
 cat << EOF > "$CLIENT_CONF"
 [Interface]
 Address = ${CLIENT_IP}/32
-DNS = 1.1.1.1,1.0.0.1
+DNS = ${DNS}
 PrivateKey = $(cat "$CLIENT_PRIVATE_KEY")
 
 [Peer]
