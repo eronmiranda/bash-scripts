@@ -7,8 +7,7 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
-      default:
-        ipv4_address: 172.18.0.16
+      - arr
     depends_on:
       - overseerr
       - plex
@@ -23,12 +22,11 @@ services:
       - TZ=Canada/Mountain
     volumes:
       - /home/eron/services/config/sonarr:/config
-      - /mnt/my_book/data:/data
+      - /mnt/hdd/data:/data
     ports:
       - 8989:8989
     networks:
-      default:
-        ipv4_address: 172.18.0.2
+      - arr
     restart: unless-stopped
 
   prowlarr:
@@ -43,8 +41,7 @@ services:
     ports:
       - 9696:9696
     networks:
-      default:
-        ipv4_address: 172.18.0.3
+      - arr
     restart: unless-stopped
 
   overseerr:
@@ -60,8 +57,7 @@ services:
     ports:
       - 5055:5055
     networks:
-      default:
-        ipv4_address: 172.18.0.4
+      - arr
     restart: unless-stopped
 
   sabnzbd:
@@ -74,12 +70,11 @@ services:
     volumes:
       - /home/eron/services/config/sabnzbd:/config
       - /home/eron/services/data/usenet/incomplete:/tmp/usenet
-      - /mnt/my_book/data/usenet:/data/usenet
+      - /mnt/hdd/data/usenet:/data/usenet
     ports:
       - 8081:8080
     networks:
-      default:
-        ipv4_address: 172.18.0.5
+      - arr
     restart: unless-stopped
 
   radarr:
@@ -91,12 +86,11 @@ services:
       - TZ=Canada/Mountain
     volumes:
       - /home/eron/services/config/radarr:/config
-      - /mnt/my_book/data:/data
+      - /mnt/hdd/data:/data
     ports:
       - 7878:7878
     networks:
-      default:
-        ipv4_address: 172.18.0.6
+      - arr
     restart: unless-stopped
 
   readarr:
@@ -108,12 +102,11 @@ services:
       - TZ=Canada/Mountain
     volumes:
       - /home/eron/services/config/readarr:/config
-      - /mnt/my_book/data:/data
+      - /mnt/hdd/data:/data
     ports:
       - 8787:8787
     networks:
-      default:
-        ipv4_address: 172.18.0.7
+      - arr
     restart: unless-stopped
 
   bazarr:
@@ -125,12 +118,11 @@ services:
       - TZ=Canada/Mountain
     volumes:
       - /home/eron/services/config/bazarr:/config
-      - /mnt/my_book/data/media:/data
+      - /mnt/hdd/data/media:/data
     ports:
       - 6767:6767
     networks:
-      default:
-        ipv4_address: 172.18.0.8
+      - arr
     restart: unless-stopped
 
   plex:
@@ -143,15 +135,15 @@ services:
       - VERSION=docker
       - PLEX_CLAIM=claim-5EtszyTp1tH4HqEwAS43
       - VIRTUAL_HOST=mortflix.stream
+      - VIRTUAL_PORT=32400
     volumes:
       - /home/eron/services/config/plex:/config
-      - /mnt/my_book/data/media:/data
+      - /mnt/hdd/data/media:/data
       - /tmp/plex:/transcode
     ports:
       - 32400:32400
     networks:
-      default:
-        ipv4_address: 172.18.0.9
+      - arr
     restart: unless-stopped
 
   qbittorrent:
@@ -171,8 +163,7 @@ services:
       - 6881:6881
       - 6881:6881/udp
     networks:
-      default:
-        ipv4_address: 172.18.0.10
+      - arr
     restart: unless-stopped
 
   homarr:
@@ -189,8 +180,7 @@ services:
     ports:
       - 7575:7575
     networks:
-      default:
-        ipv4_address: 172.18.0.11
+      - arr
     restart: unless-stopped
 
   tautulli:
@@ -207,8 +197,7 @@ services:
     ports:
       - 8181:8181
     networks:
-      default:
-        ipv4_address: 172.18.0.12
+      - arr
     restart: unless-stopped
 
   notifiarr:
@@ -224,8 +213,7 @@ services:
       - PUID=1000
       - PGID=1000
     networks:
-      default:
-        ipv4_address: 172.18.0.13
+      - arr
     restart: unless-stopped
 
   sonarr-anime:
@@ -237,12 +225,11 @@ services:
       - TZ=Canada/Mountain
     volumes:
       - /home/eron/services/config/sonarr-anime:/config
-      - /mnt/my_book/data:/data
+      - /mnt/hdd/data:/data
     ports:
       - 8990:8989
     networks:
-      default:
-        ipv4_address: 172.18.0.14
+      - arr
     restart: unless-stopped
 
   bazarr-anime:
@@ -254,17 +241,16 @@ services:
       - TZ=Canada/Mountain
     volumes:
       - /home/eron/services/config/bazarr-anime:/config
-      - /mnt/my_book/data/media:/data
+      - /mnt/hdd/data/media:/data
     ports:
       - 6868:6767
     networks:
-      default:
-        ipv4_address: 172.18.0.15
+      - arr
     restart: unless-stopped
 
 networks:
-  default:
+  arr:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.18.0.0/24
+        - subnet: 172.20.0.0/24
