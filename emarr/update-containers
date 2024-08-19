@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -euo pipefail
+
+ME=$(basename "$0")
+
+log() {
+  >&2 echo "${ME}: $*"
+}
+
+die() {
+  log "$@"
+  exit 1
+}
+
+COMPOSE_FILE="${1:-}"
+
+if [[ -n "$COMPOSE_FILE" ]]; then
+  docker compose -f "$COMPOSE_FILE" pull
+  docker compose -f "$COMPOSE_FILE" up -d
+else
+  docker compose pull
+  docker compose up -d
+fi
+
+log "removing all dangling images..."
+docker image prune -f
