@@ -13,14 +13,16 @@ die() {
   exit 1
 }
 
-COMPOSE_FILE="${1:-}"
-
-if [[ -n "$COMPOSE_FILE" ]]; then
-  docker compose -f "$COMPOSE_FILE" pull
-  docker compose -f "$COMPOSE_FILE" up -d
-else
+if [ "$#" -eq 0 ]; then
+  log "updating containers in the current directory..."
   docker compose pull
   docker compose up -d
+else 
+  for compose_file in "$@"; do
+    log "updating ${compose_file}..."
+    docker compose -f "$compose_file" pull
+    docker compose -f "$compose_file" up -d
+  done
 fi
 
 log "removing all dangling images..."
