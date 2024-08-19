@@ -1,0 +1,6 @@
+#!/bin/bash
+
+SERVICES_DIR="$HOME/services"
+ARR="$SERVICES_DIR/docker-compose.yml"
+IMMICH="$SERVICES_DIR/config/immich/docker-compose.yml"
+/usr/local/bin/update-containers "$ARR" "$IMMICH"
