@@ -1,0 +1,2 @@
+# Update docker containers of arr/immich services and remove dangling images
+0 4 * * * /usr/local/bin/up-services
