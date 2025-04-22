@@ -13,17 +13,22 @@ die() {
   exit 1
 }
 
+update_compose() {
+  local compose_file="$1"
+  log "updating ${compose_file}..."
+  docker compose -f "$compose_file" pull
+  docker compose -f "$compose_file" up -d
+}
+
 if [ "$#" -eq 0 ]; then
-  log "updating containers in the current directory..."
-  docker compose pull
-  docker compose up -d
-else 
-  for compose_file in "$@"; do
-    log "updating ${compose_file}..."
-    docker compose -f "$compose_file" pull
-    docker compose -f "$compose_file" up -d
-  done
+  COMPOSE_FILES="$(docker compose ls --format json | jq -r '.[].ConfigFiles')"
+else
+  COMPOSE_FILES="$*"
 fi
+
+for compose_file in $COMPOSE_FILES; do
+  update_compose "$compose_file"
+done
 
 log "removing all dangling images..."
 docker image prune -f
